@@ -1,0 +1,54 @@
+#define SB_PIN 2   // Sensor tanque bajo
+#define S1_PIN 3   // Sensor nivel 1
+#define S2_PIN 4   // Sensor nivel 2  
+#define S3_PIN 5   // Sensor nivel 3
+#define S4_PIN 6   // Sensor nivel 4
+#define B1_PIN 7   // Bomba 1
+#define B2_PIN 8   // Bomba 2
+
+// Variable de memoria
+int M = 0;
+
+void setup() {
+  pinMode(SB_PIN, INPUT);
+  pinMode(S1_PIN, INPUT);
+  pinMode(S2_PIN, INPUT);
+  pinMode(S3_PIN, INPUT);
+  pinMode(S4_PIN, INPUT);
+  pinMode(B1_PIN, OUTPUT);
+  pinMode(B2_PIN, OUTPUT);
+}
+
+void loop() {
+  int SB = digitalRead(SB_PIN);
+  int S1 = digitalRead(S1_PIN);
+  int S2 = digitalRead(S2_PIN);
+  int S3 = digitalRead(S3_PIN);
+  int S4 = digitalRead(S4_PIN);
+  
+  int BOMBA1, BOMBA2;
+  
+  // Lógica de memoria
+  if (SB == 1 && S1 == 0) {
+    M = 1;  // SET
+  }
+  if (SB == 0 || S4 == 1) {
+    M = 0;  // RESET
+  }
+  
+  // Control de bombas
+  if (M == 1 && SB == 1 && S4 == 0 && (S2 == 0 || S3 == 1)) {
+    BOMBA1 = 1;
+  } else {
+    BOMBA1 = 0;
+  }
+  
+  if (M == 1 && SB == 1 && S4 == 0 && S3 == 0) {
+    BOMBA2 = 1;
+  } else {
+    BOMBA2 = 0;
+  }
+  
+  digitalWrite(B1_PIN, BOMBA1);
+  digitalWrite(B2_PIN, BOMBA2);
+}
