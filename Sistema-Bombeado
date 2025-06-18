@@ -17,6 +17,9 @@ void setup() {
   pinMode(S4_PIN, INPUT);
   pinMode(B1_PIN, OUTPUT);
   pinMode(B2_PIN, OUTPUT);
+  
+  // Para debug
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -28,15 +31,21 @@ void loop() {
   
   int BOMBA1, BOMBA2;
   
-  // Lógica de memoria
+  // LÓGICA DE MEMORIA CORREGIDA
+  // SET: Activar cuando hay agua fuente Y el tanque necesita llenarse
   if (SB == 1 && S1 == 0) {
-    M = 1;  // SET
-  }
-  if (SB == 0 || S4 == 1) {
-    M = 0;  // RESET
+    M = 1;  // Iniciar llenado cuando baja a S1
   }
   
-  // Control de bombas
+  // RESET: Solo se desactiva cuando el tanque está lleno O no hay agua fuente
+  if (SB == 0 || S4 == 1) {
+    M = 0;  // Parar solo cuando está lleno o no hay agua
+  }
+  
+  // IMPORTANTE: M se mantiene en 1 durante todo el llenado
+  // No se resetea cuando S1 = 1
+  
+  // Control de bombas (tu lógica original)
   if (M == 1 && SB == 1 && S4 == 0 && (S2 == 0 || S3 == 1)) {
     BOMBA1 = 1;
   } else {
@@ -51,4 +60,16 @@ void loop() {
   
   digitalWrite(B1_PIN, BOMBA1);
   digitalWrite(B2_PIN, BOMBA2);
+  
+  // Debug para monitorear
+  Serial.print("SB:"); Serial.print(SB);
+  Serial.print(" S1:"); Serial.print(S1);
+  Serial.print(" S2:"); Serial.print(S2);
+  Serial.print(" S3:"); Serial.print(S3);
+  Serial.print(" S4:"); Serial.print(S4);
+  Serial.print(" M:"); Serial.print(M);
+  Serial.print(" B1:"); Serial.print(BOMBA1);
+  Serial.print(" B2:"); Serial.println(BOMBA2);
+  
+  delay(500);
 }
